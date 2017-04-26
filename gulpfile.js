@@ -8,8 +8,16 @@ var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
 var runSequence = require('run-sequence');
+const nunjucks = require('gulp-nunjucks');
 
-
+gulp.task('ninjucks', () =>
+	gulp.src('app/views/*.html')
+		.pipe(nunjucks.compile())
+		.pipe(gulp.dest('app'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+);
 
 gulp.task('sass', function(){
   return gulp.src('app/scss/**/*.scss')
@@ -21,14 +29,6 @@ gulp.task('sass', function(){
     }))
 });
 
-gulp.task('images', function(){
-  return gulp.src('app/img/**/*.+(png|jpg|jpeg|gif|svg)')
-  // Caching images that ran through imagemin
-  .pipe(cache(imagemin({
-      interlaced: true
-    })))
-  .pipe(gulp.dest('dist/images'))
-});
 
 gulp.task('browserSync', function() {
   browserSync.init({
@@ -63,7 +63,7 @@ gulp.task('clean:dist', function() {
 
 
 gulp.task('default', function(callback) {
-  runSequence(['sass', 'browserSync', 'watch'],
+  runSequence(['sass', 'browserSync', 'pug', 'watch'],
     callback
   )
 });
@@ -77,8 +77,9 @@ gulp.task('build', function(callback) {
   )
 });
 
-gulp.task('watch', ['browserSync', 'sass'], function(){
+gulp.task('watch', ['browserSync', 'sass', 'ninjucks'], function(){
   gulp.watch('app/scss/**/*.scss', ['sass']);
   gulp.watch('app/*.html', browserSync.reload);
   gulp.watch('app/js/**/*.js', browserSync.reload);
+  gulp.watch('app/views/*.ninjucks', browserSync.reload);
 });
