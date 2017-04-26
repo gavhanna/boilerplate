@@ -63,7 +63,7 @@ gulp.task('clean:dist', function() {
 
 
 gulp.task('default', function(callback) {
-  runSequence(['sass', 'browserSync', 'pug', 'watch'],
+  runSequence(['sass', 'browserSync', 'ninjucks', 'watch'],
     callback
   )
 });
